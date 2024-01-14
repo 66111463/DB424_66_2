@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Weather App</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    h1 {
+        color: #333;
+    }
+    #province {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    #weather {
+        color: #666;
+    }</style>
+</head>
+<body>
+    <h1>พยากรณ์อากาศ</h1>
+    <input type="text" id="province" placeholder="กรุณาระบุจังหวัด">
+    <button id="getWeather">ตกลง</button>
+    <p id="weather"></p>
+    <script>
+        document.getElementById('getWeather').addEventListener('click', function() {
+        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImRkYmVlZWJkZWY3ZTk2MjBlOTkwNzUwYWNjZGNmZGUwM2I3YWE3MWIxYTRlNWZlYWM4MjAzNjEzYWI4MDJjZjM3YzM2NzhjM2EyNDI2ODAyIn0.eyJhdWQiOiIyIiwianRpIjoiZGRiZWVlYmRlZjdlOTYyMGU5OTA3NTBhY2NkY2ZkZTAzYjdhYTcxYjFhNGU1ZmVhYzgyMDM2MTNhYjgwMmNmMzdjMzY3OGMzYTI0MjY4MDIiLCJpYXQiOjE3MDUyMjA4MDIsIm5iZiI6MTcwNTIyMDgwMiwiZXhwIjoxNzM2ODQzMjAyLCJzdWIiOiIyOTUyIiwic2NvcGVzIjpbXX0.xnqZWdt615MMNL37f9k7_Usq87M4UqaLpBJ4Eq4Dps2Lj7sLMPIqEdjnhZPu5yAq0NDqoUy2rvcaRBtGimkvjzVl8x7B_uKGD0M-xkJtgDM3coOwcEox3Pmr4GcJGxhhMCm0E-tHw0RN0Rtftu4vfgjQ9bCrnF0bFR7J9_rvgZDxh2ZkuMWmtPPm4f4jSeEc_kt8M1zDiE_dhU09zMcP5IRzXepPIitSc3rbe0AEsqjn2M69iZX6LSj5zFBcODXvtnfvjRF0ULl5eRyCICPptVbY7WNlflMB5ieGtMckeW08g8uBzATyAnec6-m6tLa-b4uGAe01Oa4QBS59Owbpq8Rqh6hemEapeHO-H8a6UOwJlh1lliqrAdFQ8KVmxAJfdiOJmMHrxz9icc3LUPeBMYlC2MpG2K_4Djafbz4eMdA9YlEQKQSAwvsHKdRcxAkcpT9O9VIRNC5lDa4nL82TQXWgt0ZS8y9y_SXZvNYBN-MwCv9lXhKaW5L4T2jcI8pufok8jQPcHtDFGITi3wiD5NgDclIMs6USmKyHrBPnZvf77_Pz-4OrWaOzRFgtMmoHA_8-alQnjdJjEi5Dka-46v4r2sy9TWt5vx8i1Fzjcezl_Q3WR7nR0E2ZD_bb1Z062qAFv0VRKWd62LppNGE4_Vj5NdzwHFYilBdGAlkuE5s';
+        let province = document.getElementById('province').value;
+        let now = new Date();
+        let y = now.getFullYear();
+        let m = (now.getMonth() + 1).toString().padStart(2, 0);
+        let d = now.getDate().toString().padStart(2, 0);
+        let h = now.getHours().toString().padStart(2, 0);
+        fetch(`https://data.tmd.go.th/nwpapi/v1/forecast/area/place?domain=2&province=${province}&starttime=${y}-${m}-${d}T${h}:00:00`, {
+            headers: {
+                "accept": "application/json",
+                "authorization": "Bearer " + token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            var weather = 'อุณหภูมิที่' + province + ' ' + data.WeatherForecasts[0].forecasts[0].data.tc + '°C.';
+            document.getElementById('weather').innerText = weather;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    </script>
+</body>
+</html>
