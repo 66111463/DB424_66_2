@@ -1,7 +1,7 @@
 <?php
     session_start();
     if (!isset($_SESSION['user'])) {
-        header('location: index.php');
+        header('location: staff_login.php');
         exit();
         }
 ?>
@@ -10,10 +10,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main</title>
+    <title>Staff Main</title>
 </head>
 <body>
-    ยินดีต้อนรับ คุณ<?php echo $_SESSION['user']['fullname'];?>
-    <h3><a href="signout.php">Signout</a></h3>
+    สวัสดีแอดมิน <?php echo $_SESSION['user']['fullname'];?>
+    <h3><a href="staff_logout.php">Logout</a></h3>
 </body>
 </html>
