@@ -1,0 +1,39 @@
+<?php
+    session_start();
+    if (!isset($_SESSION['user'])) {
+        header('location: index.php');
+        exit();
+        }
+    require 'db_conn.php';
+
+    // เริ่มต้นการทำ Transaction ด้วย begin_transaction เพื่อเป็นการ Lock ป้องกันการเขียนซ้ำ
+    $conn->begin_transaction();
+    $sql = "select seats from activities where id={$_GET['id']}";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    if($row && $row['seats'] > 0) {     
+        try{
+            $sql = "insert into enrollments(stu_id, act_id)
+                    values (?, ?)";
+            $stm = $conn->prepare($sql);
+            $stm->bind_param('si', $_SESSION['user']['id'], $_GET['id']); //s=str, i=int
+            $stm->execute();
+            //----- ต่ออีกคำสั่ง SQL เพื่อทำให้เป็น Transaction เดียวกัน
+            $sql = "update activities set seats=seats-1 where id=?";
+            $stm = $conn->prepare($sql);
+            $stm->bind_param('i', $_GET['id']);
+            $stm->execute();
+            //----- จบคำสั่งทั้งหมดแล้วให้ Commit
+            $conn->commit();
+            $resp = ['status'=>'ok'];
+        } catch (Exception $e) {
+            $conn->rollback();
+            //echo $e->getMessage();
+            $resp = ['status'=>'error', 'message'=>'Operation error.'];
+        }
+    }
+    else {
+        $resp = ['status'=>'error', 'message'=>'Please check activity again.'];
+    }
+    //echo $_GET['id']; 
+    echo json_encode($resp); //เปลี่ยน php ให้เป็น json encode format
