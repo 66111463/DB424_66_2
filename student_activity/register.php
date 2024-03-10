@@ -32,12 +32,12 @@
             $error ='Somthing wrong in registration';
         }
     }
-    $conn->close();
+    // $conn->close();
 ?>
 
 <!doctype html>
 <html lang="en">
-  <head>
+    <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Student Activity: Sign Up</title>
@@ -83,13 +83,27 @@
                     event.preventDefault();
                 }
             }
+            function changeFaculty() {
+                let id = document.getElementById('floatingFaculty').value; //สร้างตัวแปรใน java script ใช้ let จากนั้นส่งค่าให้เก็บเป็น .value
+                fetch('departments.php?id='+id)
+                .then(resp=>resp.json())
+                .then(data=>{
+                    let departments = document.getElementById('floatingDepartment');
+                    let options = '';
+                    for (let dep of data) {
+                        options += `<option value="${dep.id}">${dep.name}</option>`; //+= คือเอาของเดิมมารวมกับของใหม่ //หากต้องการแทรกตัวแปรใน string บน java script ให้ใช้ backtick
+                    }
+                    departments.innerHTML = options; // .innerHTML คือที่อยู่ระหว่าง Tag เปิด กับ Tag ปิด
+                });
+            }
         </script>
     </head>
     <body class="d-flex align-items-center py-4 bg-body-tertiary">
         <main class="form-signin w-100 m-auto">
             <!-- สร้าง Function เพื่อ confirm password ก่อน submit -->
             <form method="post" onsubmit="confirmPassword()">
-                <!-- <img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+                <img class="mb-4" src="images/logo.png" alt="" width="72" height="57">
+                <span class="h3 text-success">Student Activity</span>
                 <h1 class="h3 mb-3 fw-normal">Fill in your information</h1>
                 <?php
                     if (isset($error)) {
@@ -109,19 +123,32 @@
                     <label for="floatingEmail">Email address</label>
                 </div>
                 <div class="form-floating">
-                    <select class="form-select" id="floatingFaculty" placeholder="Faculty">
-                        <option value="1">CIBA</option>
-                        <option value="2">CITE</option>
-                        <option value="3">ANT</option>
-                        <option value="4" selected>IC</option>
+                    <select class="form-select" id="floatingFaculty" placeholder="Faculty" onchange="changeFaculty()">
+                        <?php
+                            $sql = 'select * from faculties order by id';
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='{$row['id']}'>{$row['name']}</option>";
+                            }
+                        ?>
                     </select>
                     <label for="floatingFaculty">Faculty</label>
                 </div>
                 <div class="form-floating">
                     <select name="dep_id" class="form-select" id="floatingDepartment" placeholder="Department">
-                        <option selected>IS</option>
+                        <?php
+                            $sql = 'select id, name from departments where fac_id=(
+                                    select min(id) from faculties
+                                    )';
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='{$row['id']}'>{$row['name']}</option>";
+                            }
+                            $conn->close();
+                        ?>
+                        <!-- <option selected>IS</option>
                         <option>BI</option>
-                        <option>AC</option>
+                        <option>AC</option> -->
                     </select>
                     <label for="floatingFaculty">Department</label>
                 </div>

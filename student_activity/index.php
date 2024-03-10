@@ -14,7 +14,7 @@
       $result = $stm->get_result(); // ใช้คำสั่ง get_result เพื่อแสดงเป็นตารางออกมา
       if ($row = $result->fetch_assoc()) {
         if (password_verify($password, $row['password'])) {
-          $_SESSION['user'] = ['id'=>$row['id'], 'fullname'=>$row['fullname']];
+          $_SESSION['user'] = ['id'=>$row['id'], 'fullname'=>$row['fullname'], 'pic'=>$row['pic']];
           header('location: main.php');
           exit(); // ถ้าเข้าเงื่อนไขแล้วให้ php หยุดการทำงานในบรรทัดล่าง
         }
