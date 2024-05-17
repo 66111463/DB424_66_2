@@ -45,9 +45,8 @@
                 </a>
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <?php
-                    require 'staff_menu.php';
-                    ?>
+                    <li><a href="#" class="nav-link px-2 link-secondary">Activities</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Report</a></li>
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -85,44 +84,77 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-11">
-                <h3>Activities</h3>
-            </div>
-            <div class="col-lg-1 d-grid gap-2">
-                <a class='btn btn-success' href="form_add_activity.php">เพิ่ม</a>
+                <h1 class="display-6">Activities</h1>
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <form action="add_activity.php" method="post">
+                    <div class="mb-3">
+                        <label for="Activities" class="form-label">ชื่อกิจกรรม</label>
+                        <input type="text" class="form-control" id="Activities" name="activities" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ภาคการศึกษา</label>
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <input type="text" class="form-control" id="semester" name="semester"
+                                    style="text-align: right;" required>
+                            </div>
+                            <div class="col-lg-1" style="text-align: center;">
+                                /
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" class="form-control" id="edu_year" name="edu_year" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ประเภท</label>
+                        <select class="form-select" aria-label="Default select example" id="type_act" name="type_act"
+                            required>
+                            <option selected disabled>กรุณาเลือก</option>
+                            <?php
+                             $sql = "SELECT * FROM `categories`"; 
+                             $result = $conn->query($sql);
+                                 while($row = $result->fetch_assoc()) {
+                            ?>
+                            <option value="<?=$row['id']?>"><?=$row['name']?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">เริ่ม</label>
+                        <input type="date" class="form-control" id="start" name="start" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">สิ้นสุด</label>
+                        <input type="date" class="form-control" id="end" name="end" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">จำนวน</label>
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <input type="number" class="form-control" id="amount" name="amount" required>
+                            </div>
+                            <div class="col-lg-1" style="text-align: center;">
+                                คน
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12" style="text-align: center;">
+                            <button type="submit" class="btn btn-primary">บันทึก</button>
+                        </div>
+                    </div>
+                </form>
 
-        <table class="table table-striped">
-            <tr>
-                <th class="text-center">กิจกรรม</th>
-                <th class="text-center">ภาคการศึกษา</th>
-                <th class="text-center">ประเภท</th>
-                <th class="text-center">เริ่ม</th>
-                <th class="text-center">สิ้นสุด</th>
-                <th class="text-center">ที่คงเหลือ</th>
-                <th class="text-center"></th>
-                <!-- <th class="text-center"></th> -->
-            </tr>
-            <?php 
-            
-             $sql = "select A.id, A.name, semester, edu_year, start, end, C.name cat_name, seats from activities A join categories C on A.cat_id=C.id where seats > 0 and A.id;"; 
-            $result = $conn->query($sql);
-                while($row = $result->fetch_assoc()) {
-                    ?>
-            <tr class="text-center">
-                <td><?=$row['name']?></td>
-                <td><?=$row['semester']?>/<?=$row['edu_year']?></td>
-                <td><?=$row['cat_name']?></td>
-                <td><?=date('Y-m-d', strtotime($row['start']))?></td>
-                <td><?=date('Y-m-d', strtotime($row['end']))?></td>
-                <td><?=$row['seats']?></td>
-                <td><a class='btn btn-primary btn-sm' href="form_edit_activity.php?id=<?=$row["id"]?>">แก้ไข</a></td>
-                <!-- <td><a class='btn btn-danger btn-sm' href="delete_activity.php?id=<?=$row["id"]?>">ลบ</a></td> -->
-            </tr>
-            <?php
-                }
-            ?>
-        </table>
+
+            </div>
+
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">

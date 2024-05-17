@@ -85,38 +85,39 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-11">
-                <h3>Activities</h3>
-            </div>
-            <div class="col-lg-1 d-grid gap-2">
-                <a class='btn btn-success' href="form_add_activity.php">เพิ่ม</a>
+                <h3>Student Register</h3>
             </div>
         </div>
 
         <table class="table table-striped">
             <tr>
+                <th class="text-center">ผู้สมัคร</th>
                 <th class="text-center">กิจกรรม</th>
-                <th class="text-center">ภาคการศึกษา</th>
                 <th class="text-center">ประเภท</th>
-                <th class="text-center">เริ่ม</th>
-                <th class="text-center">สิ้นสุด</th>
-                <th class="text-center">ที่คงเหลือ</th>
+                <th class="text-center">สถานะ</th>
                 <th class="text-center"></th>
                 <!-- <th class="text-center"></th> -->
             </tr>
             <?php 
             
-             $sql = "select A.id, A.name, semester, edu_year, start, end, C.name cat_name, seats from activities A join categories C on A.cat_id=C.id where seats > 0 and A.id;"; 
+             $sql = "SELECT students.fullname as name_students,students.id as id_students,enrollments.act_id,enrollments.status,activities.name as name_act,categories.name as name_cat FROM students,enrollments ,activities,categories WHERE enrollments.act_id = activities.id and activities.cat_id = categories.id and students.id = enrollments.stu_id;"; //ตัวเลือกโดยใช้ subquery ใน where เป็น not in
             $result = $conn->query($sql);
                 while($row = $result->fetch_assoc()) {
                     ?>
             <tr class="text-center">
-                <td><?=$row['name']?></td>
-                <td><?=$row['semester']?>/<?=$row['edu_year']?></td>
-                <td><?=$row['cat_name']?></td>
-                <td><?=date('Y-m-d', strtotime($row['start']))?></td>
-                <td><?=date('Y-m-d', strtotime($row['end']))?></td>
-                <td><?=$row['seats']?></td>
-                <td><a class='btn btn-primary btn-sm' href="form_edit_activity.php?id=<?=$row["id"]?>">แก้ไข</a></td>
+                <td><?=$row['name_students']?></td>
+                <td><?=$row['name_act']?></td>
+                <td><?=$row['name_cat']?></td>
+                <td>
+                    <?php
+                    if ($row['status'] == 0) {
+                        echo "รออนุมัติ";
+                    } elseif ($row['status'] == 1) {
+                        echo "อนุมัติ";
+                    }
+                    ?>
+                </td>
+                <td><a class='btn btn-primary btn-sm' href="approve.php?id_students=<?=$row["id_students"]?>&act_id=<?=$row["act_id"]?>">อนุมัติ</a></td>
                 <!-- <td><a class='btn btn-danger btn-sm' href="delete_activity.php?id=<?=$row["id"]?>">ลบ</a></td> -->
             </tr>
             <?php

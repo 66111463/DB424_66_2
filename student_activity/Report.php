@@ -85,39 +85,39 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-11">
-                <h3>Activities</h3>
+                <h3>Report</h3>
             </div>
-            <div class="col-lg-1 d-grid gap-2">
+            <!-- <div class="col-lg-1 d-grid gap-2">
                 <a class='btn btn-success' href="form_add_activity.php">เพิ่ม</a>
-            </div>
+            </div> -->
         </div>
 
         <table class="table table-striped">
             <tr>
                 <th class="text-center">กิจกรรม</th>
-                <th class="text-center">ภาคการศึกษา</th>
                 <th class="text-center">ประเภท</th>
-                <th class="text-center">เริ่ม</th>
-                <th class="text-center">สิ้นสุด</th>
-                <th class="text-center">ที่คงเหลือ</th>
-                <th class="text-center"></th>
-                <!-- <th class="text-center"></th> -->
+                <th class="text-center">จำนวนผู้เข้าร่วม</th>
+                <th class="text-center">จำนวนชั่วโมง</th>
             </tr>
             <?php 
             
-             $sql = "select A.id, A.name, semester, edu_year, start, end, C.name cat_name, seats from activities A join categories C on A.cat_id=C.id where seats > 0 and A.id;"; 
+             $sql = "SELECT activities.name,
+             categories.name AS category_name,
+             COUNT(*) AS count,
+             TIMESTAMPDIFF(HOUR, activities.start, activities.end) AS duration_hours
+             FROM enrollments
+             JOIN activities ON enrollments.act_id = activities.id
+             JOIN categories ON categories.id = activities.cat_id
+             WHERE enrollments.status = '1'
+             GROUP BY activities.id;";
             $result = $conn->query($sql);
                 while($row = $result->fetch_assoc()) {
                     ?>
             <tr class="text-center">
                 <td><?=$row['name']?></td>
-                <td><?=$row['semester']?>/<?=$row['edu_year']?></td>
-                <td><?=$row['cat_name']?></td>
-                <td><?=date('Y-m-d', strtotime($row['start']))?></td>
-                <td><?=date('Y-m-d', strtotime($row['end']))?></td>
-                <td><?=$row['seats']?></td>
-                <td><a class='btn btn-primary btn-sm' href="form_edit_activity.php?id=<?=$row["id"]?>">แก้ไข</a></td>
-                <!-- <td><a class='btn btn-danger btn-sm' href="delete_activity.php?id=<?=$row["id"]?>">ลบ</a></td> -->
+                <td><?=$row['category_name']?></td>
+                <td><?=$row['count']?></td>
+                <td><?=$row['duration_hours']?></td>
             </tr>
             <?php
                 }
